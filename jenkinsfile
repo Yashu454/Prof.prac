@@ -4,63 +4,57 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Running Build Stage'
-                echo 'Command: mvn clean package'
+                echo 'Building the code using Maven.'
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running Unit and Integration Tests Stage'
-                echo 'Command: mvn test'
-                echo 'Command: mvn integration-test'
+                echo 'Running unit tests to ensure code functions as expected.'
+                echo 'Running integration tests to ensure different components work together.'
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Running Code Analysis Stage'
-                echo 'Command: sonar-scanner'
+                echo 'Integrating SonarQube for code analysis to ensure code meets industry standards.'
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Running Security Scan Stage'
-                echo 'Command: security-scan-command'
+                echo 'Performing a security scan on the code to identify vulnerabilities.'
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Running Deploy to Staging Stage'
-                echo 'Command: deploy-to-staging-command'
+                echo 'Deploying the application to a staging server.'
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running Integration Tests on Staging Stage'
-                echo 'Command: run-integration-tests-on-staging'
+                echo 'Running integration tests on the staging environment.'
             }
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Running Deploy to Production Stage'
-                echo 'Command: deploy-to-production-command'
+                echo 'Deploying the application to a production server.'
             }
         }
     }
-
     post {
-        failure {
-            // Send email notification on pipeline failure
-              emailext attachLog: true,
-            subject: "Pipeline Failed",
-                body: "The Jenkins pipeline has failed. Please investigate it.",
-                to: 'dondayaswanthsai@gmail.com'
-        }
         success {
-            // Send email notification on pipeline success
-emailext attachLog: true,
-             subject: "Pipeline Successful",
-                body: "The Jenkins pipeline has completed successfully.",
-                to: 'dondayaswanthsai@gmail.com'
+            emailext (
+                to: 'dondayaswanthsai@gmail.com',
+                subject: 'Pipeline Status: Success',
+                body: 'The pipeline ran successfully. See attached build log for details.',
+                attachLog: true
+            )
+        }
+        failure {
+            emailext (
+                to: 'dondayaswanthsai@gmail.com',
+                subject: 'Pipeline Status: Failure',
+                body: 'The pipeline failed. See attached build log for details.',
+                attachLog: true
+            )
         }
     }
 }
