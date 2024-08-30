@@ -52,7 +52,7 @@ pipeline {
             emailext (
                 to: 'dondayaswanthsai@gmail.com',
                 subject: 'Pipeline Status: Failure',
-                body: 'The pipeline failed. See attached build log for details.',
+                body: 'The pipeline failed so. See attached build log for details.',
                 attachLog: true
             )
         }
