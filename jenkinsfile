@@ -4,47 +4,62 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building the code using Maven.'
+                echo 'Running Build Stage'
+                echo 'Command: mvn clean package'
+                // Here, the code will be compiled and packaged using Maven.
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit tests to ensure code functions as expected.'
-                echo 'Running integration tests to ensure different components work together.'
+                echo 'Running Unit and Integration Tests Stage'
+                echo 'Command: mvn test'
+                echo 'Command: mvn integration-test'
+                // Unit and integration tests are executed to validate the functionality of the code.
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Integrating SonarQube for code analysis to ensure code meets industry standards.'
+                echo 'Running Code Analysis Stage'
+                echo 'Command: sonar-scanner'
+                // Code analysis is performed using SonarQube to ensure quality and adherence to standards.
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Performing a security scan on the code to identify vulnerabilities.'
+                echo 'Running Security Scan Stage'
+                echo 'Command: dependency-check'
+                // Security scanning is conducted to identify vulnerabilities in the code.
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying the application to a staging server.'
+                echo 'Running Deploy to Staging Stage'
+                echo 'Command: scp target/*.jar user@staging-server:/path/to/deploy'
+                // The application is deployed to a staging environment.
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on the staging environment.'
+                echo 'Running Integration Tests on Staging Stage'
+                echo 'Command: run-integration-tests-on-staging'
+                // Integration tests are run on the staging environment to validate the application in a production-like setting.
             }
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying the application to a production server.'
+                echo 'Running Deploy to Production Stage'
+                echo 'Command: scp target/*.jar user@production-server:/path/to/deploy'
+                // The application is deployed to the production environment.
             }
         }
     }
+
     post {
         success {
             emailext (
                 to: 'dondayaswanthsai@gmail.com',
                 subject: 'Pipeline Status: Success',
-                body: 'The pipeline ran successfully. See attached build log for details.',
+                body: 'The Jenkins pipeline has successfully completed. Logs are attached for review.',
                 attachLog: true
             )
         }
@@ -52,7 +67,7 @@ pipeline {
             emailext (
                 to: 'dondayaswanthsai@gmail.com',
                 subject: 'Pipeline Status: Failure',
-                body: 'The pipeline failed. See attached build log for details.',
+                body: 'The Jenkins pipeline has failed. Please review the attached logs for more information.',
                 attachLog: true
             )
         }
