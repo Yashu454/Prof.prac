@@ -1,82 +1,69 @@
 pipeline {
     agent any
-
-    environment {
-        MAVEN_HOME = tool 'Maven'
-    }
-
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checking out the code from the repository.'
-                checkout scm
-            }
-        }
         stage('Build') {
             steps {
-                echo 'Building the code using Maven.'
-                sh "${MAVEN_HOME}/bin/mvn clean package"
+                echo 'Building the code...'
+                // e.g., sh 'mvn clean package'
             }
         }
-        stage('Unit Tests') {
+        stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit tests.'
-                sh "${MAVEN_HOME}/bin/mvn test"
+                echo 'Running unit and integration tests...'
+                // e.g., sh 'mvn test'
             }
         }
-        stage('Static Code Analysis') {
+        stage('Code Analysis') {
             steps {
-                echo 'Performing static code analysis with SonarQube.'
-                sh 'sonar-scanner'
+                echo 'Analyzing the code...'
+                // e.g., sh 'sonar-scanner'
             }
         }
-        stage('Security Check') {
+        stage('Security Scan') {
             steps {
-                echo 'Running security checks using OWASP Dependency-Check.'
-                sh 'mvn dependency-check:check'
+                echo 'Running security scan...'
+                // e.g., sh 'npm audit'
             }
         }
-        stage('Staging Deployment') {
+        stage('Deploy to Staging') {
             steps {
-                echo 'Deploying the application to the staging environment.'
-                sh 'ansible-playbook deploy-staging.yml'
+                echo 'Deploying to staging...'
+                // e.g., sh 'scp target/*.jar user@staging-server:/app'
             }
         }
-        stage('Acceptance Tests') {
+        stage('Integration Tests on Staging') {
             steps {
-                echo 'Running acceptance tests on the staging environment.'
-                sh 'mvn verify'
+                echo 'Running integration tests on staging...'
+                // e.g., sh 'curl -s https://staging-server/api/test'
             }
         }
-        stage('Production Deployment') {
+        stage('Deploy to Production') {
             steps {
-                echo 'Deploying the application to the production environment.'
-                sh 'ansible-playbook deploy-production.yml'
+                echo 'Deploying to production...'
+                // e.g., sh 'scp target/*.jar user@production-server:/app'
             }
         }
     }
-
     post {
-        always {
-            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
-        }
         success {
-            echo 'Sending success email notification.'
-            emailext (
-                to: 'dondayaswanthsai@gmail.com',
-                subject: 'Pipeline Status: SUCCESS',
-                body: 'The pipeline completed successfully. Build artifacts are attached.',
-                attachLog: true
-            )
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Sending failure email notification.'
-            emailext (
-                to: 'dondayaswanthsai@gmail.com',
-                subject: 'Pipeline Status: FAILURE',
-                body: 'The pipeline failed. Please check the build log for details.',
-                attachLog: true
-            )
+            echo 'Pipeline failed!'
         }
+    }
+}
+post {
+    success {
+        mail to: 'dondayaswanthsai@gmail.com',
+             subject: "Pipeline Success: ${currentBuild.fullDisplayName}",
+             body: "Pipeline completed successfully.\n\nLogs attached.",
+             attachLog: true
+    }
+    failure {
+        mail to: 'dondayaswanthsai@gmail.com',
+             subject: "Pipeline Failure: ${currentBuild.fullDisplayName}",
+             body: "Pipeline failed.\n\nLogs attached.",
+             attachLog: true
     }
 }
